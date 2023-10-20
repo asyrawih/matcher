@@ -2,6 +2,7 @@ package matcher
 
 import (
 	"errors"
+	"log"
 	"net/http"
 	"sync"
 )
@@ -36,6 +37,22 @@ func (m *Matcher) AddPattern(err error, statusCode int) {
 	m.pattern[err] = statusCode
 }
 
+func ExampleAddPattern() {
+	Notfund := errors.New("error")
+	UnAuthorize := errors.New("unauthorize")
+
+	m := NewMatcher()
+	m.AddPattern(Notfund, http.StatusNotFound)
+	m.AddPattern(UnAuthorize, http.StatusUnauthorized)
+
+	i, err := m.Match(Notfund)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Fatal(i)
+}
+
+// Match method 🚀
 func (m *Matcher) Match(err error) (int, error) {
 	statusCode, ok := m.pattern[err]
 	if !ok {
